@@ -28,8 +28,11 @@ OTHER DEALINGS IN THE SOFTWARE.
 //
 //  Appirater.swift
 //
-//  Created by SeokWon Cheul on 2016. 1. 9..
+//  Rewritten in Swift Language by SeokWon Cheul on 2016. 1. 9..
 //  Copyright © 2016년 won cheulseok. All rights reserved.
+//
+//  The Original implemention of Appirater is here
+//  https://github.com/arashpayan/appirater
 //
 
 import Foundation
