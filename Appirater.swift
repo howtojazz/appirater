@@ -183,7 +183,7 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
                 dispatch_once(&(self.onceToken), { () -> Void in
                     self._appirater = Appirater()
                     self._appirater!.delegate = self._delegate
-                    NSNotificationCenter.defaultCenter().addObserver(self, selector:"appWillResignActive", name:UIApplicationWillResignActiveNotification, object:nil)
+                    NSNotificationCenter.defaultCenter().addObserver(self._delegate!, selector:"appWillResignActive", name:UIApplicationWillResignActiveNotification, object:nil)
                 })
             }
             
@@ -434,7 +434,7 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
     
         if (!didRetrieveFlags)
         {
-            print("Error. Could not recover network reachability flags")
+            //print("Error. Could not recover network reachability flags")
             return false
         }
         
@@ -561,7 +561,7 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
         
         if Appirater._debug
         {
-            print("APPIRATER Tracking version: \(trackingVersion)")
+            //print("APPIRATER Tracking version: \(trackingVersion)")
         }
         
         if trackingVersion == version
@@ -580,7 +580,7 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
             userDefaults.setInteger(useCount, forKey:Appirater.kUseCount)
             if Appirater._debug
             {
-                print("APPIRATER Use count: \(useCount)")
+                //print("APPIRATER Use count: \(useCount)")
             }
         }
         else
@@ -631,7 +631,7 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
             userDefaults.setInteger(sigEventCount, forKey:Appirater.kSignificantEventCount)
             if Appirater._debug
             {
-                print("APPIRATER Significant event count: \(sigEventCount)")
+                //print("APPIRATER Significant event count: \(sigEventCount)")
             }
         }
         else
@@ -729,17 +729,17 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
         if (self.ratingAlert!.visible) {
             if Appirater._debug
             {
-                print("APPIRATER Hiding Alert")
+                //print("APPIRATER Hiding Alert")
             }
             self.ratingAlert!.dismissWithClickedButtonIndex(-1, animated:false)
         }
     }
     
-    private class func appWillResignActive()
+    private func appWillResignActive()
     {
         if Appirater._debug
         {
-            print("APPIRATER appWillResignActive")
+            //print("APPIRATER appWillResignActive")
         }
         Appirater.sharedInstance.hideRatingAlert()
     }
@@ -918,7 +918,7 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
         {
             
             #if (arch(i386) || arch(x86_64)) && os(iOS)
-                print("APPIRATER NOTE: iTunes App Store is not supported on the iOS simulator. Unable to open App Store page.")
+                //print("APPIRATER NOTE: iTunes App Store is not supported on the iOS simulator. Unable to open App Store page.")
             #else
                 var reviewURL = Appirater.templateReviewURL.stringByReplacingOccurrencesOfString("APP_ID", withString:String(format:"%@", Appirater._appId!))
                 
