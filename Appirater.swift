@@ -50,7 +50,7 @@ protocol AppiraterDelegate : class {
     optional func appiraterDidDismissModalView(appirater : Appirater, animated:Bool)
 }
 
-class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDelegate {
+class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDelegate, AppiraterDelegate {
     
     private static let kFirstUseDate            = "kFirstUseDate"
     private static let kUseCount				= "kUseCount"
@@ -180,10 +180,11 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
             
             if (self._appirater == nil)
             {
+                
                 dispatch_once(&(self.onceToken), { () -> Void in
-                    self._appirater = Appirater()
-                    self._appirater!.delegate = self._delegate
-                    NSNotificationCenter.defaultCenter().addObserver(self._delegate!, selector:"appWillResignActive", name:UIApplicationWillResignActiveNotification, object:nil)
+                    Appirater._appirater = Appirater()
+                    Appirater._appirater!.delegate = Appirater._appirater!
+                    NSNotificationCenter.defaultCenter().addObserver(Appirater._appirater!, selector: "appWillResignActive", name: UIApplicationWillResignActiveNotification, object: nil)
                 })
             }
             
@@ -726,7 +727,7 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
     }
     private func hideRatingAlert()
     {
-        if (self.ratingAlert!.visible) {
+        if let visible = self.ratingAlert?.visible {
             if Appirater._debug
             {
                 //print("APPIRATER Hiding Alert")
@@ -735,7 +736,7 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
         }
     }
     
-    private func appWillResignActive()
+    func appWillResignActive()
     {
         if Appirater._debug
         {
