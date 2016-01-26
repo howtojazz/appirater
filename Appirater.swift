@@ -188,6 +188,9 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
             return self._appirater!
         }
     }
+    class func setPresentCancelButton(present:Bool) {
+        self.sharedInstance.presentCancelButton = present
+    }
     /*!
     Set customized title for alert view.
     */
@@ -333,6 +336,7 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
         self._alwaysUseMainBundle = alwaysUseMainBundle
     }
 
+    private var presentCancelButton : Bool = true
     var ratingAlert : UIAlertView?
     var openInAppStore : Bool
     weak var delegate : AppiraterDelegate?
@@ -457,17 +461,16 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
         }
         
         if displayRateLaterButton {
-           
             alertView = UIAlertView(title:self.alertTitle,
                 message:self.alertMessage,
                 delegate:self,
-                cancelButtonTitle:self.alertCancelTitle,
+                cancelButtonTitle:self.presentCancelButton ? self.alertCancelTitle : nil,
                 otherButtonTitles:self.alertRateTitle, self.alertRateLaterTitle)
         } else {
             alertView = UIAlertView(title:self.alertTitle,
                 message:self.alertMessage,
                 delegate:self,
-                cancelButtonTitle:self.alertCancelTitle,
+                cancelButtonTitle:self.presentCancelButton ? self.alertCancelTitle : nil,
                 otherButtonTitles:self.alertRateTitle)
         }
         
@@ -938,12 +941,21 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
             #endif
         }
     }
-    internal func alertView(alertView: UIAlertView, didDismissWithButtonIndex buttonIndex: Int) {
-        let userDefaults = NSUserDefaults.standardUserDefaults()
-        
+    internal func alertView(alertView: UIAlertView, didDismissWithButtonIndex buttonIndex: Int)
+    {
+        if self.presentCancelButton
+        {
+            self.processRatingEvent(buttonIndex)
+        }
+        else {
+            self.processRatingEventWithoutCancelButton(buttonIndex)
+        }
+    }
+    private func processRatingEvent(alertButtonIndex:Int) {
         let delegate = Appirater._delegate
-        
-        switch (buttonIndex)
+        let userDefaults = NSUserDefaults.standardUserDefaults()
+
+        switch (alertButtonIndex)
         {
         case 0:
             // they don't want to rate it
@@ -955,6 +967,25 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
             Appirater.rateApp()
             delegate?.appiraterDidOptToRate?(self)
         case 2:
+            // remind them later
+            userDefaults.setDouble(NSDate().timeIntervalSince1970, forKey:Appirater.kReminderRequestDate)
+            userDefaults.synchronize()
+            delegate?.appiraterDidOptToRemindLater?(self)
+        default:
+            break
+        }
+    }
+    private func processRatingEventWithoutCancelButton(alertButtonIndex:Int) {
+        let delegate = Appirater._delegate
+        let userDefaults = NSUserDefaults.standardUserDefaults()
+        
+        switch (alertButtonIndex)
+        {
+        case 0:
+            // they want to rate it
+            Appirater.rateApp()
+            delegate?.appiraterDidOptToRate?(self)
+        case 1:
             // remind them later
             userDefaults.setDouble(NSDate().timeIntervalSince1970, forKey:Appirater.kReminderRequestDate)
             userDefaults.synchronize()
