@@ -496,9 +496,9 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
     // * time since last reminder
     private func ratingAlertIsAppropriate() -> Bool
     {
-        return self.connectedToNetwork()
+            return self.connectedToNetwork()
             && !self.userHasDeclinedToRate()
-            && !self.ratingAlert!.visible
+            && (self.ratingAlert == nil || !self.ratingAlert!.visible)
             && !self.userHasRatedCurrentVersion()
     }
     
@@ -541,7 +541,7 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
         let timeUntilReminder = 60 * 60 * 24 * Appirater._timeBeforeReminding
         if timeSinceReminderRequest < timeUntilReminder {return false}
         
-        return false
+        return true
     }
     
     private func incrementUseCount() {
