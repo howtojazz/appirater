@@ -516,7 +516,7 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
     // * whether rating alert is currently showing visibly
     private func ratingConditionsHaveBeenMet() -> Bool
     {
-        if Appirater._debug {
+        if Appirater._debug || UIAccessibilityIsVoiceOverRunning() {
             return true
         }
         
