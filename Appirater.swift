@@ -28,11 +28,61 @@ OTHER DEALINGS IN THE SOFTWARE.
 //
 //  Appirater.swift
 //
-//  Rewritten in Swift Language by SeokWon Cheul on 2016. 1. 9..
+//  Rewritten in swift language by SeokWon Cheul on 2016. 1. 9..
 //  Copyright © 2016년 won cheulseok. All rights reserved.
 //
-//  The Original implemention of Appirater is here
+//  The original implementation is here
 //  https://github.com/arashpayan/appirater
+//
+
+//////////////////////////////////
+//                              //
+//  Begin Test Code Examples    //
+//                              //
+//////////////////////////////////
+//
+//
+// this code lets the alert view to be presented always
+// if user choose "rate later" button, aler view will be presented with next foreground event
+//        Appirater.setDaysUntilPrompt(0)
+//        Appirater.setUsesUntilPrompt(0)
+//        Appirater.setSignificantEventsUntilPrompt(0)
+//        Appirater.setTimeBeforeReminding(0)
+//
+//test setDaysUntilPrompt
+//        // this code lets alert view to be presented after 1 day
+//        Appirater.setDaysUntilPrompt(1)
+//        Appirater.setUsesUntilPrompt(0)
+//        Appirater.setSignificantEventsUntilPrompt(0)
+//        Appirater.setTimeBeforeReminding(0)
+//
+//
+//test setUsesUntilPrompt
+//this code prevents alert view to be presented after 2 times of uses
+//        Appirater.setDaysUntilPrompt(0)
+//        Appirater.setUsesUntilPrompt(2)
+//        Appirater.setSignificantEventsUntilPrompt(0)
+//        Appirater.setTimeBeforeReminding(0)
+//
+//test setSignificantEventsUntilPrompt
+//this code lets the alert view to be presented after 2 times of significant events
+//        Appirater.setDaysUntilPrompt(0)
+//        Appirater.setUsesUntilPrompt(0)
+//        Appirater.setSignificantEventsUntilPrompt(2)
+//        Appirater.setTimeBeforeReminding(0)
+//
+//test setSignificantEventsUntilPrompt
+//this code lets the alert view to be presented after 1 day
+//        Appirater.setDaysUntilPrompt(0)
+//        Appirater.setUsesUntilPrompt(0)
+//        Appirater.setSignificantEventsUntilPrompt(0)
+//        Appirater.setTimeBeforeReminding(1)
+//
+//////////////////////////////////
+//                              //
+//  End Test Code Examples      //
+//                              //
+//////////////////////////////////
 //
 
 import Foundation
@@ -191,6 +241,9 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
             return self._appirater!
         }
     }
+    class func setPresentCancelButton(present:Bool) {
+        self.sharedInstance.presentCancelButton = present
+    }
     /*!
     Set customized title for alert view.
     */
@@ -336,6 +389,7 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
         self._alwaysUseMainBundle = alwaysUseMainBundle
     }
 
+    private var presentCancelButton : Bool = true
     var ratingAlert : UIAlertView?
     var openInAppStore : Bool
     weak var delegate : AppiraterDelegate?
@@ -460,17 +514,16 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
         }
         
         if displayRateLaterButton {
-           
             alertView = UIAlertView(title:self.alertTitle,
                 message:self.alertMessage,
                 delegate:self,
-                cancelButtonTitle:self.alertCancelTitle,
+                cancelButtonTitle:self.presentCancelButton ? self.alertCancelTitle : nil,
                 otherButtonTitles:self.alertRateTitle, self.alertRateLaterTitle)
         } else {
             alertView = UIAlertView(title:self.alertTitle,
                 message:self.alertMessage,
                 delegate:self,
-                cancelButtonTitle:self.alertCancelTitle,
+                cancelButtonTitle:self.presentCancelButton ? self.alertCancelTitle : nil,
                 otherButtonTitles:self.alertRateTitle)
         }
         
@@ -499,9 +552,9 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
     // * time since last reminder
     private func ratingAlertIsAppropriate() -> Bool
     {
-        return self.connectedToNetwork()
+            return self.connectedToNetwork()
             && !self.userHasDeclinedToRate()
-            && !self.ratingAlert!.visible
+            && (self.ratingAlert == nil || !self.ratingAlert!.visible)
             && !self.userHasRatedCurrentVersion()
     }
     
@@ -522,7 +575,9 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
         if Appirater._debug {
             return true
         }
-        
+        if UIAccessibilityIsVoiceOverRunning() {
+            return false
+        }
         let userDefaults = NSUserDefaults.standardUserDefaults()
         
         let dateOfFirstLaunch = NSDate(timeIntervalSince1970:userDefaults.doubleForKey(Appirater.kFirstUseDate))
@@ -544,7 +599,7 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
         let timeUntilReminder = 60 * 60 * 24 * Appirater._timeBeforeReminding
         if timeSinceReminderRequest < timeUntilReminder {return false}
         
-        return false
+        return true
     }
     
     private func incrementUseCount() {
@@ -939,12 +994,21 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
             #endif
         }
     }
-    internal func alertView(alertView: UIAlertView, didDismissWithButtonIndex buttonIndex: Int) {
-        let userDefaults = NSUserDefaults.standardUserDefaults()
-        
+    internal func alertView(alertView: UIAlertView, didDismissWithButtonIndex buttonIndex: Int)
+    {
+        if self.presentCancelButton
+        {
+            self.processRatingEvent(buttonIndex)
+        }
+        else {
+            self.processRatingEventWithoutCancelButton(buttonIndex)
+        }
+    }
+    private func processRatingEvent(alertButtonIndex:Int) {
         let delegate = Appirater._delegate
-        
-        switch (buttonIndex)
+        let userDefaults = NSUserDefaults.standardUserDefaults()
+
+        switch (alertButtonIndex)
         {
         case 0:
             // they don't want to rate it
@@ -956,6 +1020,25 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
             Appirater.rateApp()
             delegate?.appiraterDidOptToRate?(self)
         case 2:
+            // remind them later
+            userDefaults.setDouble(NSDate().timeIntervalSince1970, forKey:Appirater.kReminderRequestDate)
+            userDefaults.synchronize()
+            delegate?.appiraterDidOptToRemindLater?(self)
+        default:
+            break
+        }
+    }
+    private func processRatingEventWithoutCancelButton(alertButtonIndex:Int) {
+        let delegate = Appirater._delegate
+        let userDefaults = NSUserDefaults.standardUserDefaults()
+        
+        switch (alertButtonIndex)
+        {
+        case 0:
+            // they want to rate it
+            Appirater.rateApp()
+            delegate?.appiraterDidOptToRate?(self)
+        case 1:
             // remind them later
             userDefaults.setDouble(NSDate().timeIntervalSince1970, forKey:Appirater.kReminderRequestDate)
             userDefaults.synchronize()
