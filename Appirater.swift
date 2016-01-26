@@ -28,9 +28,63 @@ OTHER DEALINGS IN THE SOFTWARE.
 //
 //  Appirater.swift
 //
-//  Created by SeokWon Cheul on 2016. 1. 9..
+//  Rewritten in swift language by SeokWon Cheul on 2016. 1. 9..
 //  Copyright © 2016년 won cheulseok. All rights reserved.
 //
+//  The original implementation is here
+//  https://github.com/arashpayan/appirater
+//
+
+//////////////////////////////////
+//                              //
+//  Begin Test Code Examples    //
+//                              //
+//////////////////////////////////
+//
+//
+// this code lets the alert view to be presented always
+// if user choose "rate later" button, aler view will be presented with next foreground event
+//        Appirater.setDaysUntilPrompt(0)
+//        Appirater.setUsesUntilPrompt(0)
+//        Appirater.setSignificantEventsUntilPrompt(0)
+//        Appirater.setTimeBeforeReminding(0)
+//
+//test setDaysUntilPrompt
+//        // this code lets alert view to be presented after 1 day
+//        Appirater.setDaysUntilPrompt(1)
+//        Appirater.setUsesUntilPrompt(0)
+//        Appirater.setSignificantEventsUntilPrompt(0)
+//        Appirater.setTimeBeforeReminding(0)
+//
+//
+//test setUsesUntilPrompt
+//this code prevents alert view to be presented after 2 times of uses
+//        Appirater.setDaysUntilPrompt(0)
+//        Appirater.setUsesUntilPrompt(2)
+//        Appirater.setSignificantEventsUntilPrompt(0)
+//        Appirater.setTimeBeforeReminding(0)
+//
+//test setSignificantEventsUntilPrompt
+//this code lets the alert view to be presented after 2 times of significant events
+//        Appirater.setDaysUntilPrompt(0)
+//        Appirater.setUsesUntilPrompt(0)
+//        Appirater.setSignificantEventsUntilPrompt(2)
+//        Appirater.setTimeBeforeReminding(0)
+//
+//test setSignificantEventsUntilPrompt
+//this code lets the alert view to be presented after 1 day
+//        Appirater.setDaysUntilPrompt(0)
+//        Appirater.setUsesUntilPrompt(0)
+//        Appirater.setSignificantEventsUntilPrompt(0)
+//        Appirater.setTimeBeforeReminding(1)
+//
+//////////////////////////////////
+//                              //
+//  End Test Code Examples      //
+//                              //
+//////////////////////////////////
+//
+
 
 import Foundation
 import SystemConfiguration
