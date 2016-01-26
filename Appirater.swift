@@ -516,10 +516,12 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
     // * whether rating alert is currently showing visibly
     private func ratingConditionsHaveBeenMet() -> Bool
     {
-        if Appirater._debug || UIAccessibilityIsVoiceOverRunning() {
+        if Appirater._debug {
             return true
         }
-        
+        if UIAccessibilityIsVoiceOverRunning() {
+            return false
+        }
         let userDefaults = NSUserDefaults.standardUserDefaults()
         
         let dateOfFirstLaunch = NSDate(timeIntervalSince1970:userDefaults.doubleForKey(Appirater.kFirstUseDate))
