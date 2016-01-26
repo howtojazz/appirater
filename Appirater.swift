@@ -85,7 +85,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////
 //
 
-
 import Foundation
 import SystemConfiguration
 import StoreKit
