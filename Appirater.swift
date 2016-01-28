@@ -497,12 +497,8 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
         let isReachable = flags.contains(.Reachable)
         let needsConnection = flags.contains(.ConnectionRequired)
         let nonWiFi = flags.contains(.TransientConnection)
-
-        let testURL = NSURL(string:"http://www.apple.com/")
-        let testRequest = NSURLRequest(URL:testURL!,  cachePolicy:NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData, timeoutInterval:20.0)
-        let testConnection = NSURLConnection(request:testRequest, delegate:self)
         
-        return ((isReachable && !needsConnection) || nonWiFi) ? (testConnection != nil ? true : false) : false
+        return ((isReachable && !needsConnection) || nonWiFi)
     }
     
     
@@ -900,7 +896,7 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
     {
         for subView in parentView.subviews
         {
-            let responder = subView.nextResponder
+            let responder = subView.nextResponder()! as NSObject
             if responder is UIViewController {
                 return self.topMostViewController(responder as! UIViewController)
             }
