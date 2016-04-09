@@ -908,19 +908,21 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
         return nil
     }
     
-    private class func topMostViewController(var controller : UIViewController) -> UIViewController {
+    private class func topMostViewController( controller : UIViewController) -> UIViewController {
+        var topMostViewController:UIViewController!
         var isPresenting = false
         repeat {
             // this path is called only on iOS 6+, so -presentedViewController is fine here.
             let presented = controller.presentedViewController
             isPresenting = presented != nil
             if(presented != nil) {
-                controller = presented!
+//                controller = presented!
+                topMostViewController = presented!
             }
             
         } while (isPresenting)
         
-        return controller
+        return topMostViewController
     }
     /*!
     Tells Appirater to open the App Store page where the user can specify a
