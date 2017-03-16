@@ -1017,8 +1017,8 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
                     reviewURL = Appirater.templateReviewURLiOS8.replacingOccurrences(of: "APP_ID", with: String(format:"%@", Appirater._appId!))
                     //                    reviewURL = Appirater.templateReviewURLiOS8.stringByReplacingOccurrencesOfString("APP_ID", withString:String(format:"%@", Appirater._appId!))
                 }
-                
-                UIApplication.shared.openURL(NSURL(string:reviewURL)! as URL)
+                UIApplication.shared.open(NSURL(string:reviewURL)! as URL, options: [:], completionHandler: nil)
+//                UIApplication.shared.openURL(NSURL(string:reviewURL)! as URL)
             #endif
         }
     }
