@@ -416,13 +416,13 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
         get
         {
             var message:String!
-            var version:String!
+//            var version:String!
             do {
-                let jsonData = try Data(contentsOf: NSURL(string:"http://itunes.apple.com/lookup?id=991670217") as! URL)
+                let jsonData = try Data(contentsOf: NSURL(string:"http://itunes.apple.com/lookup?id=991670217")! as URL)
                 let jsonObject:[String:Any] = try JSONSerialization.jsonObject(with: jsonData, options: .allowFragments) as! [String:Any]
                 let appInfos = (jsonObject["results"] as! [[String:Any]])[0]
                 message = appInfos["releaseNotes"]! as! String
-                version = appInfos["version"]! as! String
+//                version = appInfos["version"]! as! String
             }catch {
                 
             }
@@ -584,7 +584,7 @@ class Appirater: NSObject, UIAlertViewDelegate, SKStoreProductViewControllerDele
         var latestVersion:String!
         let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
         do {
-            let jsonData = try Data(contentsOf: NSURL(string:"http://itunes.apple.com/lookup?id=991670217") as! URL)
+            let jsonData = try Data(contentsOf: NSURL(string:"http://itunes.apple.com/lookup?id=991670217")! as URL)
             let jsonObject:[String:Any] = try JSONSerialization.jsonObject(with: jsonData, options: .allowFragments) as! [String:Any]
             latestVersion = (jsonObject["results"] as! [[String:Any]])[0]["version"]! as! String
         }catch {
